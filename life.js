@@ -44,24 +44,28 @@ var life = {
 		}
 		
 		list.forEach(function(l){
-			var matches = l.match(/\-\s+([\d\/\-\~]+)\s?(?:\[(.+)\])?\s(.+)/i);
+			var matches = l.match(/\-\s+([\d\/\-\~]+)\s?(?:\[(.+)\])?\s(.+)?\s(\[.+\])?/i);
 			var time = matches[1];
 			var text = matches[3];
 			var finalCategory = matches[2] ?? ""
+			var eventURL = matches[4] ?? ""
+			eventURL = eventURL.replace("[",'').replace("]",'');
 			// Attempt to find text category
 			if (selectedCategories.length > 0){
 				if (selectedCategories.includes(finalCategory)) {
 					data.push({
 						time: life.parseTime(time),
 						text: text,
-						category: finalCategory
+						category: finalCategory,
+						link: eventURL
 					});
 				}
 			}else{
 				data.push({
 					time: life.parseTime(time),
 					text: text,
-					category: finalCategory
+					category: finalCategory,
+					link: eventURL
 				});
 			}
 			life.categories.push(finalCategory)
@@ -154,8 +158,12 @@ var life = {
 			categoryIndex = life.categories.indexOf(d.category)
 			console.log(categoryIndex);
 		}
+		var eventText = d.text
+		if (d.link.length > 0){
+			eventText = '<a href="'+d.link+'">'+eventText+'</a>'
+		}
 		
-		return '<div class="event" style="margin-left: ' + offset.toFixed(2) + 'px"><div class="time time-category-'+categoryIndex+'" style="width: ' + width.toFixed(2) + 'px"></div><b>' + d.time.title + '</b> ' + d.text + '&nbsp;&nbsp;' + categoryMarkup + '</div>';
+		return '<div class="event" style="margin-left: ' + offset.toFixed(2) + 'px"><div class="time time-category-'+categoryIndex+'" style="width: ' + width.toFixed(2) + 'px"></div><b>' + d.time.title + '</b> ' + eventText + '&nbsp;&nbsp;' + categoryMarkup + '</div>';
 		return '';
 	},
 	render: function(title, data){
